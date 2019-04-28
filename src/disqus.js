@@ -434,6 +434,39 @@
             }
 
             /*
+             * loadHasMore(id) - 获取隐藏回复列表
+             *
+             * @param {Array} id - 父评论 ID
+             * @return {Array} - 解析后的评论列表数据
+             */
+            let loadHasMore = (id, cursor) => {
+                // 获取传入的 cursor
+                cursor = (!cursor) ? '' : `&cursor=${cursor}`;
+                /*
+                 * 获取隐藏评论列表
+                 *
+                 * API URI: /3.0/posts/getDescendants?limit=50&order=desc&post=[parrent id]&start_post=&cursor=[cursor]&api_key=[apikey]
+                 *
+                 * https://github.com/fooleap/disqus-php-api/issues/44
+                 *
+                 * 每次加载隐藏评论的时候修改数组并进行重排序
+                 */
+                let url = `${disqusjs.config.api}3.0/posts/getDescendants?limit=50&order=desc&post=${id}&start_post=${cursor}&api_key=${apikey()}`;
+                get(url, (res) => {
+                    if (res.code === 0 && res.response.length > 0) {
+                        console.log(res);
+                        console.log(disqusjs.page.comment);
+                    } else {
+                        // DisqusJS 加载错误
+                        console.log('Error');
+                    }
+                }, (e) => {
+                    // 评论列表加载错误
+                    console.log('Error');
+                })
+            }
+
+            /*
              * parseCommentData(data) - 解析评论列表
              *
              * @param {Array} data - 评论列表 JSON
@@ -620,10 +653,10 @@
                         // 处理可能存在的隐藏回复
                         let hasMoreEl = ``;
                         if (comment.hasMore) {
-                            hasMoreEl = `<p class="dsqjs-has-more"><a id="has-more-${comment.comment.id}">显示更多回复</a></p>`;
+                            hasMoreEl = `<div class="dsqjs-has-more"><a class="dsqjs-has-more-btn" id="has-more-${comment.comment.id}" data-id="${comment.comment.id}">显示更多回复</a></div>`;
                         }
 
-                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
+                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}${hasMoreEl}</li>`;
                     });
 
                     html += '</ul>';
@@ -648,11 +681,11 @@
                     // 处理可能存在的隐藏回复
                     let hasMoreEl = ``;
                     if (comment.hasMore) {
-                        hasMoreEl = `<p class="dsqjs-has-more"><a id="has-more-${comment.comment.id}">显示更多回复</a></p>`;
+                        hasMoreEl = `<div class="dsqjs-has-more"><a class="dsqjs-has-more-btn" id="has-more-${comment.comment.id}" data-id="${comment.comment.id}">显示更多回复</a></div>`;
                     }
 
                     comment = processData(comment);
-                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
+                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}${hasMoreEl}</li>`;
                 });
 
 
@@ -665,9 +698,9 @@
                 $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
                 $$('dsqjs-force-disqus').addEventListener('click', forceDisqus);
 
-                for (let i of d.getElementsByClassName('dsqjs-has-more')) {
+                for (let i of d.getElementsByClassName('dsqjs-has-more-btn')) {
                     i.addEventListener('click', () => {
-                        console.log('hasmore');
+                        loadHasMore(i.getAttribute('data-id'));
                     });
                 }
 
