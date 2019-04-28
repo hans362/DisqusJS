@@ -448,7 +448,8 @@
                             author: comment.author.name,
                             // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
                             isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
-                            children: getChildren(+comment.id)
+                            children: getChildren(+comment.id),
+                            hasMore: comment.hasMore
                         }
                     };
 
@@ -476,6 +477,8 @@
                 let commentLists = topLevelComments.map((comment) => {
                     return commentJSON(comment);
                 });
+
+                console.log(commentLists);
 
                 return commentLists;
             }
@@ -569,7 +572,20 @@
                             </div>
                         </div>
                     */
-                    var html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${authorEl}<span class="dsqjs-meta"><time>${formatDate(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${removeDisqUs(message)}</div></div></div>`
+                    var html = `
+                <div class="dsqjs-post-item dsqjs-clearfix">
+                    <div class="dsqjs-post-avatar">
+                        ${s.avatarEl}
+                    </div>
+                    <div class="dsqjs-post-body">
+                        <div class="dsqjs-post-header">
+                            ${authorEl}<span class="dsqjs-meta"><time>${formatDate(s.createdAt)}</time></span>
+                        </div>
+                        <div class="dsqjs-post-content">
+                            ${removeDisqUs(message)}
+                        </div>
+                    </div>
+                </div>`
 
                     return html;
                 }
