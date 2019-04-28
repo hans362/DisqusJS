@@ -620,7 +620,7 @@
                         // 处理可能存在的隐藏回复
                         let hasMoreEl = ``;
                         if (comment.hasMore) {
-                            hasMoreEl = `<p class="dsqjs-has-more"><a id="load-more-${comment.comment.id}">显示更多回复</a></p>`
+                            hasMoreEl = `<p class="dsqjs-has-more"><a id="has-more-${comment.comment.id}">显示更多回复</a></p>`;
                         }
 
                         html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
@@ -648,7 +648,7 @@
                     // 处理可能存在的隐藏回复
                     let hasMoreEl = ``;
                     if (comment.hasMore) {
-                        hasMoreEl = `<p class="dsqjs-has-more"><a id="load-more-${comment.comment.id}">显示更多回复</a></p>`
+                        hasMoreEl = `<p class="dsqjs-has-more"><a id="has-more-${comment.comment.id}">显示更多回复</a></p>`;
                     }
 
                     comment = processData(comment);
@@ -664,6 +664,13 @@
 
                 $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
                 $$('dsqjs-force-disqus').addEventListener('click', forceDisqus);
+
+                for (let i of d.getElementsByClassName('dsqjs-has-more')) {
+                    i.addEventListener('click', () => {
+                        console.log('hasmore');
+                    });
+                }
+
             }
         }
 
