@@ -449,6 +449,12 @@
                             // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
                             isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
                             children: getChildren(+comment.id),
+                            /*
+                             * Disqus 改变了 Private API 的行为
+                             * https://github.com/fooleap/disqus-php-api/issues/44
+                             * 默认隐藏更多的评论，通过 hasMore 字段判断
+                             */
+                            // 将 hasMore 字段提升
                             hasMore: comment.hasMore
                         }
                     };
@@ -477,8 +483,6 @@
                 let commentLists = topLevelComments.map((comment) => {
                     return commentJSON(comment);
                 });
-
-                console.log(commentLists);
 
                 return commentLists;
             }
@@ -550,6 +554,7 @@
                 let renderPostItem = (s) => {
                     let authorEl = ``,
                         message = ``;
+
                     if (s.isDeleted) {
                         message = `<small>此评论已被删除</small>`;
                     } else {
@@ -585,7 +590,8 @@
                             ${removeDisqUs(message)}
                         </div>
                     </div>
-                </div>`
+                </div>
+                    `
 
                     return html;
                 }
@@ -610,7 +616,14 @@
                     children.map((comment) => {
                         comment = processData(comment);
                         comment.nesting = nesting + 1;
-                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+
+                        // 处理可能存在的隐藏回复
+                        let hasMoreEl = ``;
+                        if (comment.hasMore) {
+                            hasMoreEl = `<p class="dsqjs-has-more"><a id="load-more-${comment.comment.id}">显示更多回复</a></p>`
+                        }
+
+                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
                     });
 
                     html += '</ul>';
@@ -631,8 +644,15 @@
                     if (comment.children) {
                         comment.nesting = 1;
                     }
+
+                    // 处理可能存在的隐藏回复
+                    let hasMoreEl = ``;
+                    if (comment.hasMore) {
+                        hasMoreEl = `<p class="dsqjs-has-more"><a id="load-more-${comment.comment.id}">显示更多回复</a></p>`
+                    }
+
                     comment = processData(comment);
-                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
                 });
 
 

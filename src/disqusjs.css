@@ -291,3 +291,16 @@
     background-color: #dcdcdc;
     cursor: pointer;
 }
+
+#dsqjs p.dsqjs-has-more {
+    margin-bottom: 20px;
+    margin-left: 48px;
+}
+
+#dsqjs p.dsqjs-has-more a {
+    font-size: 13px;
+    line-height: 15px;
+    color: #656c7a;
+    text-decoration: underline;
+    cursor: pointer;
+}
