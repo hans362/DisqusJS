@@ -1,4 +1,4 @@
-name: Hexo Deploy Automatically
+name: DisqusJS Build Automatically
 
 on: 
   push:
