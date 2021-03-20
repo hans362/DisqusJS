@@ -65,7 +65,7 @@
     line-height: 1.5;
     word-wrap: break-word;
     overflow: hidden;
-    color: var(--ic);
+    color: var(--t);
     margin-bottom: 6px;
 }
 
@@ -160,7 +160,7 @@
     line-height: 1.5;
     word-wrap: break-word;
     overflow: hidden;
-    color: var(--ic)
+    color: var(--t)
 }
 
 #dsqjs .dsqjs-post-body code {
